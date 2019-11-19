@@ -1,6 +1,6 @@
 import telebot
 
 
-def click_gdz(message, bot, keyboard):
+def click_gdz():
+    pass
 
-    bot.send_message(message.chat.id, "вывод гдз сайтов", reply_markup=keyboard)

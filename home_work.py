@@ -5,12 +5,12 @@ chromedriver_path = 'chromedriver.exe'
 
 def click_hm(login, password, message, bot, keyboard):
     try:
-        login, password = message.text.split(' ')
+        #login, password = message.text.split(' ')
         print(login, password)
         dz = parsing(login, password)
         bot.send_message(message.chat.id, dz, reply_markup=keyboard)
     except:
-        bot.send_message(message.chat.id, "Неверный логин или пароль или edu.tatar не доступен в вашей стране")
+        bot.send_message(message.chat.id, "Неверный логин пароль или edu.tatar не доступен в вашей стране")
 
 
 def parsing(login, password):
