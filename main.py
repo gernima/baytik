@@ -135,7 +135,7 @@ def send_message(message):
         dz_tf = False
         if ' ' in message.text:
             login, password = message.text.split(' ')
-            bot.register_next_step_handler(login, password, message, bot, main_keyboard, home_work.click_hm)
+            bot.register_next_step_handler(message, home_work.click_hm(login, password, message, bot, main_keyboard))
         else:
             bot.send_message(message.chat.id, 'Ошибка')
     elif gdz_tf:
