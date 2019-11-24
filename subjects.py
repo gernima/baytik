@@ -68,8 +68,9 @@ def lit_bio_search(what, small=False):
         return 'Ошибка'
 
 
-def get_composition(s, bot):
+def get_composition(message, bot, keyboard):
     try:
+        s = message.text
         con = sqlite3.connect('compositions.db')
         cur = con.cursor()
         s = s.lower()
@@ -79,14 +80,22 @@ def get_composition(s, bot):
         s = '%' + s + '%'
         res = cur.execute("SELECT content FROM compositions WHERE Name LIKE '{}'".format('%' + s + '%')).fetchone()[0]
         con.close()
-        a = res.split('\n')
-        a = [x for x in a if len(x) != 0]
-        q = '\n'.join(a)
-        if len(q) > 4000:
-            n = len(q) // 4000
-            for i in range(n - 1):
-                pass
-        else:
-            return q
+        if len(res) != 0:
+            a = res.split('\n')
+            a = [x for x in a if len(x) != 0]
+            q = '\n'.join(a)
+            if len(q) > 4000:
+                bot.send_message(message.chat.id, q[:4000], reply_markup=keyboard)
+                bot.send_message(message.chat.id, q[4000:8000], reply_markup=keyboard)
+                try:
+                    bot.send_message(message.chat.id, q[8000:12000], reply_markup=keyboard)
+                except:
+                    pass
+                try:
+                    bot.send_message(message.chat.id, q[12000:16000], reply_markup=keyboard)
+                except:
+                    pass
+            else:
+                bot.send_message(message.chat.id, q, reply_markup=keyboard)
     except:
-        return 'Сочинение не найдено'
+        bot.send_message(message.chat.id, 'Сочинение не найдено', reply_markup=keyboard)

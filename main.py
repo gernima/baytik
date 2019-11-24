@@ -42,8 +42,8 @@ ru_keyboard.row("Назад")
 
 lit_keyboard = telebot.types.ReplyKeyboardMarkup(True)
 lit_keyboard.row('Найди сочинение')
-lit_keyboard.row("биография (кратко)")
-lit_keyboard.row("биография (полная)")
+lit_keyboard.row("биография (кратко)", "биография (полная)")
+lit_keyboard.row('Шпаргалка')
 lit_keyboard.row("Назад")
 
 talk_keyboard = telebot.types.ReplyKeyboardMarkup(True)
@@ -136,20 +136,30 @@ def lit_bio_long(message):
 
 
 def lit_work(message):
-    subjects.get_composition(message.text, bot)
+    subjects.get_composition(message, bot, lit_keyboard)
     bot.register_next_step_handler(message, lit_subject)
+
+
+def get_cribs(message, dir, keyboard):
+    directory = 'cribs/' + str(dir)
+    files = os.listdir(directory)
+    for i in files:
+        bot.send_document(message.chat.id, i, reply_markup=keyboard)
 
 
 def lit_subject(message, keyboard=lit_keyboard):
     if message.text.lower() == 'найди сочинение':
         bot.send_message(message.chat.id, 'Введите название сочинения', reply_markup=keyboard)
-        bot.register_next_step_handler(message, lit_work, bot)
+        bot.register_next_step_handler(message, lit_work)
     elif message.text.lower() == 'биография (полная)':
         bot.send_message(message.chat.id, 'Введите ваш запрос', reply_markup=keyboard)
         bot.register_next_step_handler(message, lit_bio_long)
     elif message.text.lower() == 'биография (кратко)':
         bot.send_message(message.chat.id, 'Введите ваш запрос', reply_markup=keyboard)
         bot.register_next_step_handler(message, lit_bio_small)
+    elif message.text.lower() == "шпаргалка":
+        get_cribs(message, 'lit_crib', lit_keyboard)
+        bot.register_next_step_handler(message, lit_keyboard)
     elif message.text.lower() == "назад":
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
         bot.register_next_step_handler(message, click_subjects_keyboard)
