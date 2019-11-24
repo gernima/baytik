@@ -49,6 +49,11 @@ lit_keyboard.row("Назад")
 talk_keyboard = telebot.types.ReplyKeyboardMarkup(True)
 talk_keyboard.row('назад')
 
+inf_keyboard = telebot.types.ReplyKeyboardMarkup(True)
+inf_keyboard.row("Перевод СС")
+inf_keyboard.row("шпаргалка", "python cheat sheet list")
+inf_keyboard.row("Назад")
+
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
@@ -69,6 +74,9 @@ def click_subjects_keyboard(message):
     elif message.text.lower() == 'литература':
         bot.send_message(message.chat.id, "Хорошо, пусть будет " + message.text.lower(), reply_markup=lit_keyboard)
         bot.register_next_step_handler(message, lit_subject)
+    elif message.text.lower() == "информатика":
+        bot.send_message(message.chat.id, "Хорошо, пусть будет " + message.text.lower(), reply_markup=inf_keyboard)
+        bot.register_next_step_handler(message, inf_subject)
     elif message.text.lower() == "назад":
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=main_keyboard)
         bot.register_next_step_handler(message, send_message)
@@ -157,6 +165,24 @@ def lit_subject(message, keyboard=lit_keyboard):
         bot.send_message(message.chat.id, "Я вас не понял", reply_markup=keyboard)
         bot.register_next_step_handler(message, lit_subject)
 
+def inf_get(message):
+    num, from_, to = message.text.split(' ')
+    bot.send_message(bot.send.message, subjects.convert_base(num, from_, to))
+    bot.register_next_step_handler(message, inf_subject)
+
+
+
+
+def inf_subjects(message, keyboard=inf_keyboard):
+    if message.text.lower() == "Перевод СС"":
+        bot.send_message(message.chat.id, "Введите через пробел число, с какой в какую систему счисления\n Пример: 100101 2 10")
+        bot.register_next_step_handler(message, inf_get)
+    # elif message.text.lower() == "python cheat sheet list":
+    #     bot.send_photo(message.chat.id, open(python.jpg))
+    
+    elif message.text.lower() == "назад":
+        bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
+        bot.register_next_step_handler(message, click_subjects_keyboard)
 
 def get_dz(message):
     if ' ' in message.text:
