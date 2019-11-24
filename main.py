@@ -2,16 +2,19 @@
 # !pip install gTTS
 # pip install selenium
 # pip install yandex_translate
+# pip install apiai
 
 import telebot
 from gtts import gTTS
 import subjects, talking, home_work, tests_subjects, gdz
-from yandex_translate import YandexTranslate
+import apiai, json
+import os, dotenv
 
+# dotend.load_dotenv()
+# token = os.environ['TOKEN']
 token = '1049041175:AAFHw6FXE2-yCv7L4sJmwg50eImuAusJOG0'
 bot = telebot.TeleBot(token)
 chromedriver_path = '~/chromedriver'
-translate = YandexTranslate('trnsl.1.1.20191118T112631Z.f64a9d42a3ccc05f.2d0224570891cba3621e2cb1266bcd89f471813f')
 
 main_keyboard = telebot.types.ReplyKeyboardMarkup()
 main_keyboard.row('Привет')
@@ -43,6 +46,9 @@ lit_keyboard.row("биография (кратко)")
 lit_keyboard.row("биография (полная)")
 lit_keyboard.row("Назад")
 
+talk_keyboard = telebot.types.ReplyKeyboardMarkup(True)
+talk_keyboard.row('назад')
+
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
@@ -72,7 +78,7 @@ def click_subjects_keyboard(message):
 
 
 def translate_word(message, keyboard, func):
-    bot.send_message(message.chat.id, subjects.translating(message.text, translate), reply_markup=keyboard)
+    bot.send_message(message.chat.id, subjects.translating(message.text), reply_markup=keyboard)
     bot.register_next_step_handler(message, func)
 
 
@@ -81,12 +87,11 @@ def en_subject(message, keyboard=en_keyboard):
         bot.send_message(message.chat.id, 'Введите текст и подождите')
         bot.register_next_step_handler(message, audio, keyboard, 'en', en_subject)
     elif message.text.lower() == 'переведи':
-        bot.send_message(message.chat.id,
-                         'Введите с какого языка на какой и текст \n(Например, ru-en привет, en-ru hello)')
+        bot.send_message(message.chat.id, 'Введите текст')
         bot.register_next_step_handler(message, translate_word, en_keyboard, en_subject)
     elif message.text.lower() == 'назад':
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
-        bot.register_next_step_handler(message, send_message)
+        bot.register_next_step_handler(message, click_subjects_keyboard)
     else:
         bot.send_message(message.chat.id, "Я вас не понял", reply_markup=en_keyboard)
         bot.register_next_step_handler(message, en_subject)
@@ -110,12 +115,11 @@ def ru_subject(message, keyboard=ru_keyboard):
         bot.send_message(message.chat.id, 'Введите текст и подождите')
         bot.register_next_step_handler(message, orf, ru_keyboard, 'ru_RU', ru_subject)
     elif message.text.lower() == 'переведи':
-        bot.send_message(message.chat.id,
-                         'Введите с какого языка на какой и текст \n(Например, ru-en привет, en-ru hello)')
+        bot.send_message(message.chat.id, 'Введите текст')
         bot.register_next_step_handler(message, translate_word, ru_keyboard, ru_subject)
     elif message.text.lower() == 'назад':
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
-        bot.register_next_step_handler(message, send_message)
+        bot.register_next_step_handler(message, click_subjects_keyboard)
     else:
         bot.send_message(message.chat.id, "Я вас не понял", reply_markup=keyboard)
         bot.register_next_step_handler(message, ru_subject)
@@ -132,13 +136,14 @@ def lit_bio_long(message):
 
 
 def lit_work(message):
+    subjects.get_composition(message.text, bot)
     bot.register_next_step_handler(message, lit_subject)
 
 
 def lit_subject(message, keyboard=lit_keyboard):
     if message.text.lower() == 'найди сочинение':
         bot.send_message(message.chat.id, 'Введите название сочинения', reply_markup=keyboard)
-        bot.register_next_step_handler(message, lit_work)
+        bot.register_next_step_handler(message, lit_work, bot)
     elif message.text.lower() == 'биография (полная)':
         bot.send_message(message.chat.id, 'Введите ваш запрос', reply_markup=keyboard)
         bot.register_next_step_handler(message, lit_bio_long)
@@ -161,6 +166,25 @@ def get_dz(message):
         bot.send_message(message.chat.id, 'Проверьте логин и пароль')
 
 
+def click_talk(message):
+    request = apiai.ApiAI('b228edfe9f7e49079dcd6a223874fde9').text_request()  # Токен API к Dialogflow
+    request.lang = 'ru'  # На каком языке будет послан запрос
+    request.session_id = 'BatlabAIBot'  # ID Сессии диалога (нужно, чтобы потом учить бота)
+    request.query = message.text  # Посылаем запрос к ИИ с сообщением от юзера
+    responseJson = json.loads(request.getresponse().read().decode('utf-8'))
+    response = responseJson['result']['fulfillment']['speech']  # Разбираем JSON и вытаскиваем ответ
+    # Если есть ответ от бота - присылаем юзеру, если нет - бот его не понял
+    if response != '':
+        bot.send_message(message.chat.id, response, reply_markup=talk_keyboard)
+        bot.register_next_step_handler(message, click_talk)
+    elif message.text.lower() == 'назад':
+        bot.send_message(message.chat.id, 'Хорошо\nВыбирите что хотите?', reply_markup=main_keyboard)
+        bot.register_next_step_handler(message, send_message)
+    else:
+        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=talk_keyboard)
+        bot.register_next_step_handler(message, click_talk)
+
+
 @bot.message_handler(content_types=['text'])
 def send_message(message):
     if message.text.lower() == "привет":
@@ -179,7 +203,8 @@ def send_message(message):
         test_keyboard = tests_subjects.click_tests(message)
         bot.send_message(message.chat.id, 'Введите <название предмета> <класс>', reply_markup=test_keyboard)
     elif message.text.lower() == "хочу пообщаться":
-        bot.send_message(message.chat.id, talking.click_talk(message), reply_markup=main_keyboard)
+        bot.send_message(message.chat.id, 'Привет', reply_markup=talk_keyboard)
+        bot.register_next_step_handler(message, click_talk)
     else:
         bot.send_message(message.chat.id, "Я вас не понимаю", reply_markup=main_keyboard)
 

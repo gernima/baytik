@@ -2,6 +2,9 @@ import telebot
 from gtts import gTTS
 import enchant
 import wikipedia
+import re
+import sqlite3
+from yandex_translate import YandexTranslate
 
 
 def create_audio(lang, message):
@@ -11,11 +14,18 @@ def create_audio(lang, message):
     return file
 
 
-def translating(text, translate):
+en_alph = 'abcdefghijklmnopqrstuvwxyz'
+ru_alph = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
+translate = YandexTranslate('trnsl.1.1.20191118T112631Z.f64a9d42a3ccc05f.2d0224570891cba3621e2cb1266bcd89f471813f')
+
+
+def translating(text):
+    if text.strip()[0] in en_alph:
+        a = 'en-ru'
+    else:
+        a = 'ru-en'
     if ' ' in text:
-        x = text.split(' ')
-        a = x[0]
-        words = x[1:]
+        words = text.split(' ')
         res_word = ''
         for word in words:
             res_word += translate.translate(word, a)['text'][0]
@@ -39,7 +49,7 @@ def check_orphographic(text, lang="ru_RU"):
         return ' '.join(res)
     except:
         pass
-    return 'Ошибка проверьте предыдущее сообщение'
+    return 'Ошибка, проверьте предыдущее сообщение'
 
 
 def lit_bio_search(what, small=False):
@@ -57,3 +67,26 @@ def lit_bio_search(what, small=False):
     except:
         return 'Ошибка'
 
+
+def get_composition(s, bot):
+    try:
+        con = sqlite3.connect('compositions.db')
+        cur = con.cursor()
+        s = s.lower()
+        s.replace('Сочинение', '')
+        s = re.sub(r'\s', '', s)
+        s = re.sub(r'[^\w\s]', '', s)
+        s = '%' + s + '%'
+        res = cur.execute("SELECT content FROM compositions WHERE Name LIKE '{}'".format('%' + s + '%')).fetchone()[0]
+        con.close()
+        a = res.split('\n')
+        a = [x for x in a if len(x) != 0]
+        q = '\n'.join(a)
+        if len(q) > 4000:
+            n = len(q) // 4000
+            for i in range(n - 1):
+                pass
+        else:
+            return q
+    except:
+        return 'Сочинение не найдено'
