@@ -9,17 +9,21 @@ import os, dotenv
 
 dotenv.load_dotenv()
 token_yan = os.environ['token_yan']
+en_alph = 'abcdefghijklmnopqrstuvwxyz'
+ru_alph = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
 
 
-def create_audio(lang, message):
+def create_audio(message):
+    if message.text.strip().lower()[0] in en_alph:
+        lang = 'en'
+    else:
+        lang = 'ru'
     tts = gTTS(message.text, lang)
     tts.save('says.mp3')
     file = open('says.mp3', 'rb')
     return file
 
 
-en_alph = 'abcdefghijklmnopqrstuvwxyz'
-ru_alph = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
 translate = YandexTranslate(token_yan)
 
 
@@ -106,7 +110,7 @@ def get_composition(message, bot, keyboard):
         bot.send_message(message.chat.id, 'Сочинение не найдено', reply_markup=keyboard)
 
 
-def convert_base(num, to_base=10, from_base=16):
+def convert_base(num, to_base=10, from_base=2):
     # first convert to decimal number
     if isinstance(num, str):
         n = int(num, from_base)

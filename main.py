@@ -29,7 +29,7 @@ subjects_keyboard.row("Физика")
 subjects_keyboard.row("Назад")
 
 tests_keyboard = telebot.types.ReplyKeyboardMarkup(True)
-tests_keyboard.row('Английский -т', "Математика -т", "Русский -т")
+tests_keyboard.row("ОГЭ", "ЕГЭ")
 tests_keyboard.row("Назад")
 
 en_keyboard = telebot.types.ReplyKeyboardMarkup(True)
@@ -52,7 +52,7 @@ talk_keyboard.row('назад')
 
 inf_keyboard = telebot.types.ReplyKeyboardMarkup(True)
 inf_keyboard.row("Перевод СС")
-inf_keyboard.row("шпаргалка", "python cheat sheet list")
+inf_keyboard.row("python cheat sheet list")
 inf_keyboard.row("законы логики", "перевод данных")
 inf_keyboard.row("Назад")
 
@@ -134,7 +134,7 @@ def en_subject(message, keyboard=en_keyboard):
 
 
 def audio(message, keyboard, lang, func):
-    bot.send_audio(message.chat.id, subjects.create_audio(lang, message), reply_markup=keyboard)
+    bot.send_audio(message.chat.id, subjects.create_audio(message), reply_markup=keyboard)
     bot.register_next_step_handler(message, func)
 
 
@@ -203,18 +203,17 @@ def lit_subject(message, keyboard=lit_keyboard):
 
 def inf_get(message):
     num, from_, to = map(int, message.text.split())
-    bot.send_message(message.chat.id, subjects.convert_base(num, to, from_), reply_markup=inf_keyboard)
+    bot.send_message(message.chat.id, subjects.convert_base(str(num), from_base=from_, to_base=to),
+                     reply_markup=inf_keyboard)
     bot.register_next_step_handler(message, inf_subject)
 
 
 def inf_subject(message, keyboard=inf_keyboard):
     if message.text.lower() == "перевод сс":
         bot.send_message(message.chat.id,
-                         "Введите через пробел число, с какой в какую систему счисления\n Пример: 100101 2 10",
+                         "Введите через пробел число, с какой в какую систему счисления\n Пример: 100101 10 2",
                          reply_markup=keyboard)
         bot.register_next_step_handler(message, inf_get)
-    # elif message.text.lower() == "python cheat sheet list":
-    #     bot.send_photo(message.chat.id, open(python.jpg))
     elif message.text.lower() == 'законы логики':
         bot.send_photo(message.chat.id, open("cribs/inf/Zakony logiki.jpg", 'rb'), reply_markup=keyboard)
         bot.register_next_step_handler(message, inf_subject)
@@ -249,11 +248,40 @@ def click_talk(message):
         bot.send_message(message.chat.id, response, reply_markup=talk_keyboard)
         bot.register_next_step_handler(message, click_talk)
     elif message.text.lower() == 'назад':
-        bot.send_message(message.chat.id, 'Хорошо\nВыбирите что хотите?', reply_markup=main_keyboard)
         bot.register_next_step_handler(message, send_message)
     else:
         bot.send_message(message.chat.id, "Я вас не понял", reply_markup=talk_keyboard)
         bot.register_next_step_handler(message, click_talk)
+
+
+def get_oge(message):
+    bot.send_message(message.chat.id, tests_subjects.oge(message.text))
+    bot.register_next_step_handler(message, tests)
+
+
+def get_ege(message):
+    bot.send_message(message.chat.id, tests_subjects.ege(message.text))
+    bot.register_next_step_handler(message, tests)
+
+
+def tests(message):
+    if message.text.lower() == 'огэ':
+        bot.send_message(message.chat.id, 'Введите <название предмета> <вариант>', reply_markup=tests_keyboard)
+        bot.register_next_step_handler(message, get_oge)
+    elif message.text.lower() == 'егэ':
+        bot.send_message(message.chat.id, 'Введите <название предмета> <вариант>', reply_markup=tests_keyboard)
+        bot.register_next_step_handler(message, get_ege)
+    elif message.text.lower() == 'назад':
+        bot.send_message(message.chat.id, 'Хорошо', reply_markup=main_keyboard)
+        bot.register_next_step_handler(message, send_message)
+    else:
+        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=tests_keyboard)
+        bot.register_next_step_handler(message, tests)
+
+
+def send_gdz(message):
+    bot.send_message(message.chat.id, gdz.get_gdz(message.text))
+    bot.register_next_step_handler(message, send_message)
 
 
 @bot.message_handler(content_types=['text'])
@@ -263,7 +291,9 @@ def send_message(message):
     elif message.text.lower() == 'назад':
         bot.send_message(message.chat.id, 'Вы вернулись назад', reply_markup=main_keyboard)
     elif message.text.lower() == 'гдз':
-        bot.send_message(message.chat.id, 'Введите <название предмета> <класс> <автора>', reply_markup=main_keyboard)
+        bot.send_message(message.chat.id, 'Введите <название предмета> <класс> <автора> <номер задания>',
+                         reply_markup=main_keyboard)
+        bot.register_next_step_handler(message, send_gdz)
     elif message.text.lower() == 'дз':
         bot.send_message(message.chat.id, 'Введите <логин> <пароль> от edu.tatar', reply_markup=main_keyboard)
         bot.register_next_step_handler(message, get_dz)
@@ -271,8 +301,8 @@ def send_message(message):
         bot.send_message(message.chat.id, 'Вот список предметов', reply_markup=subjects_keyboard)
         bot.register_next_step_handler(message, click_subjects_keyboard)
     elif message.text.lower() == "тесты":
-        test_keyboard = tests_subjects.click_tests(message)
-        bot.send_message(message.chat.id, 'Введите <название предмета> <класс>', reply_markup=test_keyboard)
+        bot.send_message(message.chat.id, 'Выберите ОГЭ или ЕГЭ', reply_markup=tests_keyboard)
+        bot.register_next_step_handler(message, tests)
     elif message.text.lower() == "хочу пообщаться":
         bot.send_message(message.chat.id, 'Привет', reply_markup=talk_keyboard)
         bot.register_next_step_handler(message, click_talk)
