@@ -5,6 +5,10 @@ import wikipedia
 import re
 import sqlite3
 from yandex_translate import YandexTranslate
+import os, dotenv
+
+dotenv.load_dotenv()
+token_yan = os.environ['token_yan']
 
 
 def create_audio(lang, message):
@@ -16,22 +20,23 @@ def create_audio(lang, message):
 
 en_alph = 'abcdefghijklmnopqrstuvwxyz'
 ru_alph = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
-translate = YandexTranslate('trnsl.1.1.20191118T112631Z.f64a9d42a3ccc05f.2d0224570891cba3621e2cb1266bcd89f471813f')
+translate = YandexTranslate(token_yan)
 
 
 def translating(text):
-    if text.strip()[0] in en_alph:
-        a = 'en-ru'
-    else:
-        a = 'ru-en'
-    if ' ' in text:
+    try:
+        if text.strip()[0] in en_alph:
+            a = 'en-ru'
+        else:
+            a = 'ru-en'
         words = text.split(' ')
         res_word = ''
         for word in words:
             res_word += translate.translate(word, a)['text'][0]
             res_word += ' '
         return res_word
-    return 'Ошибка проверьте предыдущее сообщение'
+    except:
+        return 'Ошибка проверьте предыдущее сообщение'
 
 
 def check_orphographic(text, lang="ru_RU"):
@@ -100,22 +105,17 @@ def get_composition(message, bot, keyboard):
     except:
         bot.send_message(message.chat.id, 'Сочинение не найдено', reply_markup=keyboard)
 
+
 def convert_base(num, to_base=10, from_base=16):
-# first convert to decimal number
+    # first convert to decimal number
     if isinstance(num, str):
         n = int(num, from_base)
     else:
         n = int(num)
-# now convert decimal to 'to_base' base
+    # now convert decimal to 'to_base' base
     alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     if n < to_base:
         return alphabet[n]
     else:
         return convert_base(n // to_base, to_base) + alphabet[n % to_base]
 
-
-
-num = input("Number: ")
-fr = int(input("From: "))
-to = int(input("To: "))
-print(convert_base(num, to, fr))
