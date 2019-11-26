@@ -25,7 +25,7 @@ main_keyboard.row("Хочу пообщаться")
 subjects_keyboard = telebot.types.ReplyKeyboardMarkup(True)
 subjects_keyboard.row('Английский', "Русский")
 subjects_keyboard.row("Информатика", 'Литература')
-subjects_keyboard.row("Физика")
+subjects_keyboard.row("Физика", "История")
 subjects_keyboard.row("Назад")
 
 tests_keyboard = telebot.types.ReplyKeyboardMarkup(True)
@@ -52,14 +52,23 @@ talk_keyboard.row('назад')
 
 inf_keyboard = telebot.types.ReplyKeyboardMarkup(True)
 inf_keyboard.row("Перевод СС")
-inf_keyboard.row("python cheat sheet list")
-inf_keyboard.row("законы логики", "перевод данных")
+# inf_keyboard.row("python cheat sheet list")
+inf_keyboard.row("законы логики", "Степень двойки")
 inf_keyboard.row("Назад")
 
 fiz_keyboard = telebot.types.ReplyKeyboardMarkup(True)
 fiz_keyboard.row("Механика", "Молекулярная физика. Термодинамика")
 fiz_keyboard.row("Электродинамика. Электростатика", "Оптика")
 fiz_keyboard.row("Назад")
+
+his_keyboard = telebot.types.ReplyKeyboardMarkup(True)
+his_keyboard.row("Найди дату")
+his_keyboard.row("Назад")
+
+dz_keyboard = telebot.types.ReplyKeyboardMarkup(True)
+dz_keyboard.row("Дз на сегодня", "Дз на завтра")
+dz_keyboard.row("Авторизация")
+dz_keyboard.row("Назад")
 
 
 @bot.message_handler(commands=['start'])
@@ -87,6 +96,9 @@ def click_subjects_keyboard(message):
     elif message.text.lower() == "физика":
         bot.send_message(message.chat.id, "Хорошо, пусть будет " + message.text.lower(), reply_markup=fiz_keyboard)
         bot.register_next_step_handler(message, fiz_subject)
+    elif message.text.lower() == "история":
+        bot.send_message(message.chat.id, "Хорошо, пусть будет " + message.text.lower(), reply_markup=his_keyboard)
+        bot.register_next_step_handler(message, his_subject)
     elif message.text.lower() == "назад":
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=main_keyboard)
         bot.register_next_step_handler(message, send_message)
@@ -95,16 +107,37 @@ def click_subjects_keyboard(message):
         bot.register_next_step_handler(message, click_subjects_keyboard)
 
 
+def his_get_date(message):
+    bot.send_message(message.chat.id, subjects.get_date(message.text.lower()), reply_markup=his_keyboard)
+    bot.register_next_step_handler(message, his_subject)
+
+
+def his_subject(message, keyboard=his_keyboard):
+    if message.text.lower() == "найди дату":
+        bot.send_message(message.chat.id, "Введите дату", reply_markup=keyboard)
+        bot.register_next_step_handler(message, his_get_date)
+    elif message.text.lower() == "назад":
+        bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
+        bot.register_next_step_handler(message, click_subjects_keyboard)
+    else:
+        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=keyboard)
+        bot.register_next_step_handler(message, his_subject)
+
+
 def fiz_subject(message, keyboard=fiz_keyboard):
     if message.text.lower() == "механика":
         bot.send_photo(message.chat.id, open('cribs/fiz/mechanica.jpg', 'rb'), reply_markup=keyboard)
+        bot.register_next_step_handler(message, fiz_keyboard)
     elif message.text.lower() == "молекулярная физика. термодинамика":
         bot.send_photo(message.chat.id, open('cribs/fiz/molekyl.png', 'rb'), reply_markup=keyboard)
         bot.send_photo(message.chat.id, open('cribs/fiz/teplovye.png', 'rb'), reply_markup=keyboard)
+        bot.register_next_step_handler(message, fiz_keyboard)
     elif message.text.lower() == "электродинамика. электростатика":
         bot.send_photo(message.chat.id, open('cribs/fiz/elektro.jpeg', 'rb'), reply_markup=keyboard)
+        bot.register_next_step_handler(message, fiz_keyboard)
     elif message.text.lower() == "оптика":
         bot.send_photo(message.chat.id, open('cribs/fiz/optika.png', 'rb'), reply_markup=keyboard)
+        bot.register_next_step_handler(message, fiz_keyboard)
     elif message.text.lower() == "назад":
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
         bot.register_next_step_handler(message, click_subjects_keyboard)
@@ -228,12 +261,41 @@ def inf_subject(message, keyboard=inf_keyboard):
         bot.register_next_step_handler(message, inf_subject)
 
 
-def get_dz(message):
-    if ' ' in message.text:
-        login, password = message.text.split(' ')
-        home_work.click_hm(login, password, message, bot, main_keyboard)
+def get_dz(message, this_day):
+    try:
+        if this_day:
+            home_work.click_hm(True, message, bot, dz_keyboard)
+        else:
+            home_work.click_hm(False, message, bot, dz_keyboard)
+    except:
+        bot.send_message(message.chat.id, 'Проверьте логин и пароль указаный при авторизации, и заново авторизуйтесь',
+                         reply_markup=dz_keyboard)
+
+
+def reg_user(message, keyboard):
+    home_work.write_login_password(message, bot, keyboard)
+    bot.register_next_step_handler(message, dz)
+
+
+def dz(message, keyboard=dz_keyboard):
+    if message.text.lower() == 'дз на сегодня':
+        # bot.send_message(message.chat.id, 'Дз на сегодня:', reply_markup=keyboard)
+        get_dz(message, True)
+        bot.register_next_step_handler(message, dz)
+    elif message.text.lower() == 'дз на завтра':
+        # bot.send_message(message.chat.id, 'Дз на завтра:', reply_markup=keyboard)
+        get_dz(message, False)
+        bot.register_next_step_handler(message, dz)
+    elif message.text.lower() == 'авторизация':
+        bot.send_message(message.chat.id, 'Введите логин и пароль через пробел.\nПривер: 123456789 123456789',
+                         reply_markup=keyboard)
+        bot.register_next_step_handler(message, reg_user, keyboard)
+    elif message.text.lower() == "назад":
+        bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=main_keyboard)
+        bot.register_next_step_handler(message, send_message)
     else:
-        bot.send_message(message.chat.id, 'Проверьте логин и пароль')
+        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=keyboard)
+        bot.register_next_step_handler(message, dz)
 
 
 def click_talk(message):
@@ -295,13 +357,17 @@ def send_message(message):
                          reply_markup=main_keyboard)
         bot.register_next_step_handler(message, send_gdz)
     elif message.text.lower() == 'дз':
-        bot.send_message(message.chat.id, 'Введите <логин> <пароль> от edu.tatar', reply_markup=main_keyboard)
-        bot.register_next_step_handler(message, get_dz)
+        bot.send_message(message.chat.id, 'Перед запросом авторизуйтесь, если вы этого не сделали',
+                         reply_markup=dz_keyboard)
+        bot.register_next_step_handler(message, dz)
     elif message.text.lower() == "предметы":
         bot.send_message(message.chat.id, 'Вот список предметов', reply_markup=subjects_keyboard)
         bot.register_next_step_handler(message, click_subjects_keyboard)
     elif message.text.lower() == "тесты":
-        bot.send_message(message.chat.id, 'Выберите ОГЭ или ЕГЭ', reply_markup=tests_keyboard)
+        bot.send_message(message.chat.id,
+                         'Список предметов: Математика, Информатика, Русский, Английский, Физика, Химия, Биология, '
+                         'География, Обществознание, Литература, История\nВыберите вариант от 1 до 15',
+                         reply_markup=tests_keyboard)
         bot.register_next_step_handler(message, tests)
     elif message.text.lower() == "хочу пообщаться":
         bot.send_message(message.chat.id, 'Привет', reply_markup=talk_keyboard)
