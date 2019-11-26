@@ -89,7 +89,7 @@ def oge(text):
             soup = bs(req.text, 'html.parser')
             pdf = soup.find('a', id='pdf_linkh')
             return pdf['href']
-        elif subject.lower() == 'русский язык':
+        elif subject.lower() == 'русский':
             list_ = []
             for i in range(4579017, 4579033):
                 list_.append(i)
@@ -119,7 +119,7 @@ def oge(text):
             soup = bs(req.text, 'html.parser')
             pdf = soup.find('a', id='pdf_linkh')
             return pdf['href']
-        elif subject.lower() == 'английский язык':
+        elif subject.lower() == 'английский':
             list_ = []
             for i in range(657557, 657573):
                 list_.append(i)
@@ -233,7 +233,7 @@ def ege(text):
             pdf = soup.find('a', id='pdf_linkh')
             return pdf['href']
 
-        elif subject.lower() == 'русский язык':
+        elif subject.lower() == 'русский':
 
             list_ = []
 
@@ -249,7 +249,7 @@ def ege(text):
             pdf = soup.find('a', id='pdf_linkh')
             return pdf['href']
 
-        elif subject.lower() == 'английский язык':
+        elif subject.lower() == 'английский':
 
             list_ = []
 
