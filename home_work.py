@@ -22,7 +22,7 @@ def read_login_password(message, bot, keyboard):
 
 def write_login_password(message, bot, keyboard):
     if ' ' in message.text:
-        with open('edu.txt', '+') as file:
+        with open('edu.txt', 'w') as file:
 
             file.write(
                 str(message.chat.id) + ':' + str(message.text.split(' ')[0]) + ' ' + str(message.text.split()[1]))
