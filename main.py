@@ -70,7 +70,7 @@ his_keyboard.row("Назад")
 
 dz_keyboard = telebot.types.ReplyKeyboardMarkup(True)
 dz_keyboard.row("Дз на сегодня", "Дз на завтра")
-dz_keyboard.row("Авторизация")
+# dz_keyboard.row("Авторизация")
 dz_keyboard.row("Назад")
 
 
@@ -225,7 +225,7 @@ def lit_subject(message, keyboard=lit_keyboard):
     elif message.text.lower() == "шпаргалка":
         try:
             bot.send_message(message.chat.id, 'https://drive.google.com/open?id=1_3h8_9qVg_52fpu43tYM--uvYV3qcqYU',
-                              reply_markup=keyboard)
+                             reply_markup=keyboard)
         except:
             bot.send_message(message.chat.id, 'Ошибка', reply_markup=keyboard)
         bot.register_next_step_handler(message, lit_subject)
@@ -280,15 +280,33 @@ def reg_user(message, keyboard):
     bot.register_next_step_handler(message, dz)
 
 
+def new_dz(message, day):
+    try:
+        if ' ' in message.text:
+            login, password = message.text.split(' ')
+            if day:
+                home_work.click_hm(True, message, bot, dz_keyboard, login, password)
+            else:
+                home_work.click_hm(False, message, bot, dz_keyboard, login, password)
+        else:
+            bot.send_message(message.chat.id, 'Логин и пароль нужно писать через пробел', reply_markup=dz_keyboard)
+    except:
+        bot.send_message(message.chat.id, 'Проблемы с прокси, попробуйте повторить', reply_markup=dz_keyboard)
+    bot.register_next_step_handler(message, dz)
+
+
 def dz(message, keyboard=dz_keyboard):
     if message.text.lower() == 'дз на сегодня':
         # bot.send_message(message.chat.id, 'Дз на сегодня:', reply_markup=keyboard)
-        get_dz(message, True)
-        bot.register_next_step_handler(message, dz)
+        # get_dz(message, True)
+        bot.send_message(message.chat.id, "Введите логин и пароль через пробел\nПример: 123456789 123456789",
+                         reply_markup=keyboard)
+        bot.register_next_step_handler(message, new_dz, True)
     elif message.text.lower() == 'дз на завтра':
         # bot.send_message(message.chat.id, 'Дз на завтра:', reply_markup=keyboard)
-        get_dz(message, False)
-        bot.register_next_step_handler(message, dz)
+        bot.send_message(message.chat.id, "Введите логин и пароль через пробел\nПример: 123456789 123456789",
+                         reply_markup=keyboard)
+        bot.register_next_step_handler(message, new_dz, False)
     elif message.text.lower() == 'авторизация':
         bot.send_message(message.chat.id, 'Введите логин и пароль через пробел.\nПривер: 123456789 123456789',
                          reply_markup=keyboard)
@@ -313,6 +331,7 @@ def click_talk(message):
         bot.send_message(message.chat.id, response, reply_markup=talk_keyboard)
         bot.register_next_step_handler(message, click_talk)
     elif message.text.lower() == 'назад':
+        bot.send_message(message.chat.id, 'Пока', reply_markup=main_keyboard)
         bot.register_next_step_handler(message, send_message)
     else:
         bot.send_message(message.chat.id, "Я вас не понял", reply_markup=talk_keyboard)

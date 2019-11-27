@@ -26,22 +26,25 @@ def write_login_password(message, bot, keyboard):
 
             file.write(
                 str(message.chat.id) + ':' + str(message.text.split(' ')[0]) + ' ' + str(message.text.split()[1]))
-            bot.send_message(message.chat.id, 'Вы успешно авторизовались', reply_markup=keyboard)
+            #bot.send_message(message.chat.id, 'Вы успешно авторизовались', reply_markup=keyboard)
     else:
         bot.send_message(message.chat.id, 'Логин и пароль нужно писать через пробел', reply_markup=keyboard)
 
 
-def click_hm(this_day, message, bot, keyboard):
-    login, password = read_login_password(message, bot, keyboard)
-    dz = parsing(login, password, this_day)
-    s = ''
-    dz = [x for x in dz if x]
-    for i in dz:
-        for j in i:
-            s += j.replace('\t', '').replace('\r', '') + ' | '
-        s += '\n'
-    bot.send_message(message.chat.id, s, reply_markup=keyboard)
-    # print(s)
+def click_hm(this_day, message, bot, keyboard, login, password):
+    #try:
+        #login, password = read_login_password(message, bot, keyboard)
+        dz = parsing(login, password, this_day)
+        s = ''
+        dz = [x for x in dz if x]
+        for i in dz:
+            for j in i:
+                s += j.replace('\t', '').replace('\r', '') + ' | '
+            s += '\n'
+        bot.send_message(message.chat.id, s, reply_markup=keyboard)
+        # print(s)
+    #except:
+    #    bot.send_message(message.chat.id, 'Проверьте логин и пароль', reply_markup=keyboard)
 
 
 def login_with_requests(session, login, password):
