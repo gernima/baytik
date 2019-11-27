@@ -1,3 +1,6 @@
+# ! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import telebot
 from gtts import gTTS
 import enchant
@@ -7,8 +10,6 @@ import sqlite3
 from yandex_translate import YandexTranslate
 import os, dotenv
 
-# ! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 
 data = """862 г. – «Призвание варягов» на Русь.
@@ -450,7 +451,7 @@ def translating(text):
             a = 'ru-en'
         return translate.translate(text, a)['text'][0]
     except:
-        return 'Ошибка проверьте предыдущее сообщение'
+        return 'Ошибка, проверьте предыдущее сообщение'
 
 
 def check_orphographic(text, lang="ru_RU"):
@@ -478,17 +479,22 @@ def lit_bio_search(what, small=False):
         res = []
         if small:
             search = wikipedia.summary(sentences=10, title=what)  # sentenses - кол-во предложений
-            res.append(search)
-        else:
-            res.append(some.content)
+            res.append(str(search))
+            return ' '.join(res)
+
+        res.append(some.content)
         res.append("\nИсточник: " + some.url)
-        return ' '.join(res)
+        f = open('bio.txt', 'r+', encoding='utf-8')
+        s = ' '.join(res)
+        f.write(s)
+        f.close()
+        return "\nИсточник: " + some.url
     except:
         return 'Ошибка'
 
 
 def get_composition(message, bot, keyboard):
-    #try:
+    try:
         s = message.text
         con = sqlite3.connect('compositions.db')
         cur = con.cursor()
@@ -516,8 +522,8 @@ def get_composition(message, bot, keyboard):
                     pass
             else:
                 bot.send_message(message.chat.id, q, reply_markup=keyboard)
-    # except:
-    #     bot.send_message(message.chat.id, 'Сочинение не найдено', reply_markup=keyboard)
+    except:
+        bot.send_message(message.chat.id, 'Сочинение не найдено', reply_markup=keyboard)
 
 
 def convert_base(num, to_base=10, from_base=2):
