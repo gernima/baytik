@@ -17,12 +17,12 @@ dotenv.load_dotenv()
 token = os.environ['token']
 token_ii = os.environ['token_ii']
 bot = telebot.TeleBot(token)
-chromedriver_path = '~/chromedriver'
+# chromedriver_path = '~/chromedriver'
 
 main_keyboard = telebot.types.ReplyKeyboardMarkup()
 main_keyboard.row('Привет')
 main_keyboard.row("Предметы", "Тесты")
-main_keyboard.row("ГДЗ", "ДЗ")
+main_keyboard.row("ДЗ")
 main_keyboard.row("Хочу пообщаться")
 
 subjects_keyboard = telebot.types.ReplyKeyboardMarkup(True)
@@ -378,10 +378,10 @@ def send_message(message):
         bot.send_message(message.chat.id, "Привет " + name(message) + ".", reply_markup=main_keyboard)
     elif message.text.lower() == 'назад':
         bot.send_message(message.chat.id, 'Вы вернулись назад', reply_markup=main_keyboard)
-    elif message.text.lower() == 'гдз':
-        bot.send_message(message.chat.id, 'Введите <название предмета> <класс> <автора> <номер задания>',
-                         reply_markup=main_keyboard)
-        bot.register_next_step_handler(message, send_gdz)
+    # elif message.text.lower() == 'гдз':
+    #     bot.send_message(message.chat.id, 'Введите <название предмета> <класс> <автора> <номер задания>',
+    #                      reply_markup=main_keyboard)
+    #     bot.register_next_step_handler(message, send_gdz)
     elif message.text.lower() == 'дз':
         bot.send_message(message.chat.id, 'Перед запросом авторизуйтесь, если вы этого не сделали',
                          reply_markup=dz_keyboard)
