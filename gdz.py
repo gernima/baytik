@@ -2,6 +2,9 @@ from bs4 import BeautifulSoup as bs
 import requests
 from selenium import webdriver
 
+# ! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
 
 options = webdriver.ChromeOptions()
 options.add_argument("--headless")
@@ -45,4 +48,3 @@ def get_gdz(what):
         return src_photo
     except:
         return 'Ошибка'
-

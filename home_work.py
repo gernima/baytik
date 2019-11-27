@@ -1,6 +1,8 @@
-from selenium import webdriver
 import requests
 from bs4 import BeautifulSoup as bs
+
+# ! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
 
 def read_login_password(message, bot, keyboard):
@@ -13,7 +15,6 @@ def read_login_password(message, bot, keyboard):
             if x[0] == str(message.chat.id):
                 login = x[1].split(' ')[0]
                 password = x[1].split(' ')[1]
-                print(login, password)
         # if len(login):
         #     bot.send_message(message.chat.id, 'Сперва авторизируйтесь', reply_markup=keyboard)
     return login, password

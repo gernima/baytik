@@ -4,9 +4,12 @@
 # pip install yandex_translate
 # pip install apiai
 
+# ! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import telebot
 from gtts import gTTS
-import subjects, talking, home_work, tests_subjects, gdz
+import subjects, home_work, tests_subjects, gdz
 import apiai, json
 import os, dotenv
 
@@ -127,17 +130,17 @@ def his_subject(message, keyboard=his_keyboard):
 def fiz_subject(message, keyboard=fiz_keyboard):
     if message.text.lower() == "механика":
         bot.send_photo(message.chat.id, open('cribs/fiz/mechanica.jpg', 'rb'), reply_markup=keyboard)
-        bot.register_next_step_handler(message, fiz_keyboard)
+        bot.register_next_step_handler(message, fiz_subject)
     elif message.text.lower() == "молекулярная физика. термодинамика":
         bot.send_photo(message.chat.id, open('cribs/fiz/molekyl.png', 'rb'), reply_markup=keyboard)
         bot.send_photo(message.chat.id, open('cribs/fiz/teplovye.png', 'rb'), reply_markup=keyboard)
-        bot.register_next_step_handler(message, fiz_keyboard)
+        bot.register_next_step_handler(message, fiz_subject)
     elif message.text.lower() == "электродинамика. электростатика":
         bot.send_photo(message.chat.id, open('cribs/fiz/elektro.jpeg', 'rb'), reply_markup=keyboard)
-        bot.register_next_step_handler(message, fiz_keyboard)
+        bot.register_next_step_handler(message, fiz_subject)
     elif message.text.lower() == "оптика":
         bot.send_photo(message.chat.id, open('cribs/fiz/optika.png', 'rb'), reply_markup=keyboard)
-        bot.register_next_step_handler(message, fiz_keyboard)
+        bot.register_next_step_handler(message, fiz_subject)
     elif message.text.lower() == "назад":
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
         bot.register_next_step_handler(message, click_subjects_keyboard)

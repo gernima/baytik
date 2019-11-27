@@ -7,6 +7,10 @@ import sqlite3
 from yandex_translate import YandexTranslate
 import os, dotenv
 
+# ! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
 data = """862 г. – «Призвание варягов» на Русь.
 862–879 гг. – Княжение Рюрика в Новгороде.
 879–912 гг. – Княжение Олега в Киеве.
@@ -528,4 +532,3 @@ def convert_base(num, to_base=10, from_base=2):
         return alphabet[n]
     else:
         return convert_base(n // to_base, to_base) + alphabet[n % to_base]
-
