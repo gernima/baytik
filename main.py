@@ -201,7 +201,8 @@ def lit_bio_small(message):
 
 
 def lit_bio_long(message):
-    bot.send_document(message.chat.id, subjects.lit_bio_search(message.text), reply_markup=lit_keyboard)
+    bot.send_message(message.chat.id, subjects.lit_bio_search(message.text), reply_markup=lit_keyboard)
+    bot.send_document(message.chat.id, open('bio.txt', 'rb'), reply_markup=lit_keyboard)
     bot.register_next_step_handler(message, lit_subject)
 
 

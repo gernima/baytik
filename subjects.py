@@ -488,7 +488,7 @@ def lit_bio_search(what, small=False):
         s = ' '.join(res)
         f.write(s)
         f.close()
-        return f
+        return "\nИсточник: " + some.url
     except:
         return 'Ошибка'
 
