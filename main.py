@@ -54,7 +54,7 @@ talk_keyboard = telebot.types.ReplyKeyboardMarkup(True)
 talk_keyboard.row('назад')
 
 inf_keyboard = telebot.types.ReplyKeyboardMarkup(True)
-inf_keyboard.row("Перевод СС")
+inf_keyboard.row("Перевод систем счисления")
 # inf_keyboard.row("python cheat sheet list")
 inf_keyboard.row("законы логики", "Степень двойки")
 inf_keyboard.row("Назад")
@@ -156,7 +156,6 @@ def translate_word(message, keyboard, func):
 
 def en_subject(message, keyboard=en_keyboard):
     if message.text.lower() == 'озвучь':
-        bot.send_message(message.chat.id, 'Введите текст и подождите')
         bot.register_next_step_handler(message, audio, keyboard, 'en', en_subject)
     elif message.text.lower() == 'переведи':
         bot.send_message(message.chat.id, 'Введите текст')
@@ -181,7 +180,6 @@ def orf(message, keyboard, lang, func):
 
 def ru_subject(message, keyboard=ru_keyboard):
     if message.text.lower() == 'озвучь':
-        bot.send_message(message.chat.id, 'Введите текст и подождите')
         bot.register_next_step_handler(message, audio, keyboard, 'ru', ru_subject)
     elif message.text.lower() == 'проверь на орфографию':
         bot.send_message(message.chat.id, 'Введите текст и подождите')
@@ -203,7 +201,7 @@ def lit_bio_small(message):
 
 
 def lit_bio_long(message):
-    bot.send_message(message.chat.id, subjects.lit_bio_search(message.text), reply_markup=lit_keyboard)
+    bot.send_document(message.chat.id, subjects.lit_bio_search(message.text), reply_markup=lit_keyboard)
     bot.register_next_step_handler(message, lit_subject)
 
 
@@ -223,11 +221,8 @@ def lit_subject(message, keyboard=lit_keyboard):
         bot.send_message(message.chat.id, 'Введите ваш запрос', reply_markup=keyboard)
         bot.register_next_step_handler(message, lit_bio_small)
     elif message.text.lower() == "шпаргалка":
-        try:
-            bot.send_message(message.chat.id, 'https://drive.google.com/open?id=1_3h8_9qVg_52fpu43tYM--uvYV3qcqYU',
-                             reply_markup=keyboard)
-        except:
-            bot.send_message(message.chat.id, 'Ошибка', reply_markup=keyboard)
+        bot.send_message(message.chat.id, 'https://drive.google.com/open?id=1_3h8_9qVg_52fpu43tYM--uvYV3qcqYU',
+                         reply_markup=keyboard)
         bot.register_next_step_handler(message, lit_subject)
     elif message.text.lower() == "назад":
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
@@ -244,12 +239,12 @@ def inf_get(message):
                          reply_markup=inf_keyboard)
     except:
         bot.send_message(message.chat.id, 'Сообщение нужно вводить в правильном формате\n'
-                         '<Число> <текущая система счисления> <в какую нужно перевести>')
+                                          '<Число> <текущая система счисления> <в какую нужно перевести>')
     bot.register_next_step_handler(message, inf_subject)
 
 
 def inf_subject(message, keyboard=inf_keyboard):
-    if message.text.lower() == "перевод сс":
+    if message.text.lower() == "перевод систем счисления":
         bot.send_message(message.chat.id,
                          "Введите через пробел число, с какой в какую систему счисления\n Пример: 100101 10 2",
                          reply_markup=keyboard)
@@ -257,7 +252,7 @@ def inf_subject(message, keyboard=inf_keyboard):
     elif message.text.lower() == 'законы логики':
         bot.send_photo(message.chat.id, open("cribs/inf/Zakony logiki.jpg", 'rb'), reply_markup=keyboard)
         bot.register_next_step_handler(message, inf_subject)
-    elif message.text.lower() == 'перевод данных':
+    elif message.text.lower() == 'степень двойки':
         bot.send_photo(message.chat.id, open("cribs/inf/перевод данных.jpg", 'rb'), reply_markup=keyboard)
         bot.register_next_step_handler(message, inf_subject)
     elif message.text.lower() == "назад":
@@ -275,7 +270,8 @@ def get_dz(message, this_day):
         else:
             home_work.click_hm(False, message, bot, dz_keyboard)
     except:
-        bot.send_message(message.chat.id, 'Проверьте логин и пароль указаный при авторизации, и заново авторизуйтесь',
+        bot.send_message(message.chat.id,
+                         'Проверьте логин и пароль указаный при авторизации, и при необходимости заново авторизуйтесь',
                          reply_markup=dz_keyboard)
     bot.register_next_step_handler(message, dz)
 
@@ -312,7 +308,7 @@ def dz(message, keyboard=dz_keyboard):
         #                  reply_markup=keyboard)
         # bot.register_next_step_handler(message, new_dz, False)
     elif message.text.lower() == 'авторизация':
-        bot.send_message(message.chat.id, 'Введите логин и пароль через пробел.\nПривер: 123456789 123456789',
+        bot.send_message(message.chat.id, 'Введите логин и пароль через пробел.\nПример: 123456789 123456789',
                          reply_markup=keyboard)
         bot.register_next_step_handler(message, reg_user, keyboard)
     elif message.text.lower() == "назад":
@@ -392,7 +388,7 @@ def send_message(message):
     elif message.text.lower() == "тесты":
         bot.send_message(message.chat.id,
                          'Список предметов: Математика, Информатика, Русский, Английский, Физика, Химия, Биология, '
-                         'География, Обществознание, Литература, История\nВыберите вариант от 1 до 15',
+                         'География, Обществознание, Литература, История\nВводить нужно так как написана в списке\nВыберите вариант от 1 до 15',
                          reply_markup=tests_keyboard)
         bot.register_next_step_handler(message, tests)
     elif message.text.lower() == "хочу пообщаться":
