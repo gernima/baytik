@@ -488,7 +488,7 @@ def lit_bio_search(what, small=False):
 
 
 def get_composition(message, bot, keyboard):
-    #try:
+    try:
         s = message.text
         con = sqlite3.connect('compositions.db')
         cur = con.cursor()
@@ -516,8 +516,8 @@ def get_composition(message, bot, keyboard):
                     pass
             else:
                 bot.send_message(message.chat.id, q, reply_markup=keyboard)
-    #except:
-     #   bot.send_message(message.chat.id, 'Сочинение не найдено', reply_markup=keyboard)
+    except:
+        bot.send_message(message.chat.id, 'Сочинение не найдено', reply_markup=keyboard)
 
 
 def convert_base(num, to_base=10, from_base=2):
