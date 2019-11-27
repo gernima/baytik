@@ -4,6 +4,10 @@ import json
 from bs4 import BeautifulSoup as bs
 
 
+# ! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
 def oge(text):
     try:
         subject = text.split(' ')[0]
