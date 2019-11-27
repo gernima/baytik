@@ -22,7 +22,8 @@ def read_login_password(message, bot, keyboard):
 
 def write_login_password(message, bot, keyboard):
     if ' ' in message.text:
-        with open('edu.txt', 'w') as file:
+        with open('edu.txt', '+') as file:
+
             file.write(
                 str(message.chat.id) + ':' + str(message.text.split(' ')[0]) + ' ' + str(message.text.split()[1]))
             bot.send_message(message.chat.id, 'Вы успешно авторизовались', reply_markup=keyboard)

@@ -224,8 +224,8 @@ def lit_subject(message, keyboard=lit_keyboard):
         bot.register_next_step_handler(message, lit_bio_small)
     elif message.text.lower() == "шпаргалка":
         try:
-            bot.send_message(message.chat.id, "Ждите идет загрузка...", reply_markup=keyboard)
-            bot.send_document(message.chat.id, open('cribs/lit/li552255.rar', 'rb'), reply_markup=keyboard)
+            bot.send_document(message.chat.id, 'https://drive.google.com/open?id=1_3h8_9qVg_52fpu43tYM--uvYV3qcqYU',
+                              reply_markup=keyboard)
         except:
             bot.send_message(message.chat.id, 'Ошибка', reply_markup=keyboard)
         bot.register_next_step_handler(message, lit_keyboard)
