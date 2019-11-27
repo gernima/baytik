@@ -106,7 +106,7 @@ def click_subjects_keyboard(message):
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=main_keyboard)
         bot.register_next_step_handler(message, send_message)
     else:
-        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=subjects_keyboard)
+        bot.send_message(message.chat.id, "Я вас не понимаю", reply_markup=subjects_keyboard)
         bot.register_next_step_handler(message, click_subjects_keyboard)
 
 
@@ -123,7 +123,7 @@ def his_subject(message, keyboard=his_keyboard):
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
         bot.register_next_step_handler(message, click_subjects_keyboard)
     else:
-        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=keyboard)
+        bot.send_message(message.chat.id, "Я вас не понимаю", reply_markup=keyboard)
         bot.register_next_step_handler(message, his_subject)
 
 
@@ -145,7 +145,7 @@ def fiz_subject(message, keyboard=fiz_keyboard):
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
         bot.register_next_step_handler(message, click_subjects_keyboard)
     else:
-        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=keyboard)
+        bot.send_message(message.chat.id, "Я вас не понимаю", reply_markup=keyboard)
         bot.register_next_step_handler(message, fiz_subject)
 
 
@@ -165,7 +165,7 @@ def en_subject(message, keyboard=en_keyboard):
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
         bot.register_next_step_handler(message, click_subjects_keyboard)
     else:
-        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=en_keyboard)
+        bot.send_message(message.chat.id, "Я вас не понимаю", reply_markup=en_keyboard)
         bot.register_next_step_handler(message, en_subject)
 
 
@@ -193,7 +193,7 @@ def ru_subject(message, keyboard=ru_keyboard):
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
         bot.register_next_step_handler(message, click_subjects_keyboard)
     else:
-        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=keyboard)
+        bot.send_message(message.chat.id, "Я вас не понимаю", reply_markup=keyboard)
         bot.register_next_step_handler(message, ru_subject)
 
 
@@ -233,14 +233,18 @@ def lit_subject(message, keyboard=lit_keyboard):
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
         bot.register_next_step_handler(message, click_subjects_keyboard)
     else:
-        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=keyboard)
+        bot.send_message(message.chat.id, "Я вас не понимаю", reply_markup=keyboard)
         bot.register_next_step_handler(message, lit_subject)
 
 
 def inf_get(message):
-    num, from_, to = map(int, message.text.split())
-    bot.send_message(message.chat.id, subjects.convert_base(str(num), from_base=from_, to_base=to),
-                     reply_markup=inf_keyboard)
+    try:
+        num, from_, to = map(int, message.text.split())
+        bot.send_message(message.chat.id, subjects.convert_base(str(num), from_base=from_, to_base=to),
+                         reply_markup=inf_keyboard)
+    except:
+        bot.send_message(message.chat.id, 'Сообщение нужно вводить в правильном формате\n'
+                         '<Число> <текущая система счисления> <в какую нужно перевести>')
     bot.register_next_step_handler(message, inf_subject)
 
 
@@ -260,7 +264,7 @@ def inf_subject(message, keyboard=inf_keyboard):
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
         bot.register_next_step_handler(message, click_subjects_keyboard)
     else:
-        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=keyboard)
+        bot.send_message(message.chat.id, "Я вас не понимаю", reply_markup=keyboard)
         bot.register_next_step_handler(message, inf_subject)
 
 
@@ -315,7 +319,7 @@ def dz(message, keyboard=dz_keyboard):
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=main_keyboard)
         bot.register_next_step_handler(message, send_message)
     else:
-        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=keyboard)
+        bot.send_message(message.chat.id, "Я вас не понимаю", reply_markup=keyboard)
         bot.register_next_step_handler(message, dz)
 
 
@@ -334,7 +338,7 @@ def click_talk(message):
         bot.send_message(message.chat.id, 'Пока', reply_markup=main_keyboard)
         bot.register_next_step_handler(message, send_message)
     else:
-        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=talk_keyboard)
+        bot.send_message(message.chat.id, "Я вас не понимаю", reply_markup=talk_keyboard)
         bot.register_next_step_handler(message, click_talk)
 
 
@@ -359,7 +363,7 @@ def tests(message):
         bot.send_message(message.chat.id, 'Хорошо', reply_markup=main_keyboard)
         bot.register_next_step_handler(message, send_message)
     else:
-        bot.send_message(message.chat.id, "Я вас не понял", reply_markup=tests_keyboard)
+        bot.send_message(message.chat.id, "Я вас не понимаю", reply_markup=tests_keyboard)
         bot.register_next_step_handler(message, tests)
 
 
