@@ -224,11 +224,11 @@ def lit_subject(message, keyboard=lit_keyboard):
         bot.register_next_step_handler(message, lit_bio_small)
     elif message.text.lower() == "шпаргалка":
         try:
-            bot.send_document(message.chat.id, 'https://drive.google.com/open?id=1_3h8_9qVg_52fpu43tYM--uvYV3qcqYU',
+            bot.send_message(message.chat.id, 'https://drive.google.com/open?id=1_3h8_9qVg_52fpu43tYM--uvYV3qcqYU',
                               reply_markup=keyboard)
         except:
             bot.send_message(message.chat.id, 'Ошибка', reply_markup=keyboard)
-        bot.register_next_step_handler(message, lit_keyboard)
+        bot.register_next_step_handler(message, lit_subject)
     elif message.text.lower() == "назад":
         bot.send_message(message.chat.id, "Вы вернулись назад", reply_markup=subjects_keyboard)
         bot.register_next_step_handler(message, click_subjects_keyboard)
