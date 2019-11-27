@@ -26,12 +26,13 @@ prefs = {'profile.managed_default_content_setting_values': {'cookies': 2, 'image
          "profile.managed_default_content_settings.images": 2}
 
 options.add_experimental_option("prefs", prefs)
+chromedriver_path = '~/chromedriver'
 
 
 def get_gdz(what):
     try:
         base = 'https://gdz.ru/search/?q='
-        driver = webdriver.Chrome('chromedriver.exe', chrome_options=options)
+        driver = webdriver.Chrome(chromedriver_path, chrome_options=options)
         q = '+'.join(what.lower().split(' '))
         url = base + q
         driver.get(url)
