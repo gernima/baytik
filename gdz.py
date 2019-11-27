@@ -32,7 +32,7 @@ chromedriver_path = '~/chromedriver'
 def get_gdz(what):
     try:
         base = 'https://gdz.ru/search/?q='
-        driver = webdriver.Chrome(chromedriver_path, chrome_options=options)
+        driver = webdriver.Chrome('chromedriver.exe', chrome_options=options)
         q = '+'.join(what.lower().split(' '))
         url = base + q
         driver.get(url)
