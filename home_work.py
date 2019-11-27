@@ -71,12 +71,12 @@ def parsing(login, password, this_day):  # local - 33 sec
     login_with_requests(s, login, password)
     res = s.get(day_url)
     html = res.text
-    soup = bs(html)
+    soup = bs(html, 'html.parser')
     if not this_day:
         next_day_url = soup.find('span', 'nextd').find('a')['href']
         res = s.get(next_day_url)
         html = res.text
-        soup = bs(html)
+        soup = bs(html, 'html.parser')
     table = soup.find('tbody')
     day_subjects = table.find_all('tr')
     day_subjects = [subject.text.split('\n') for subject in day_subjects]
